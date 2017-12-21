@@ -1,0 +1,227 @@
+using std;
+
+namespace Arcade
+{
+    /// <summary>
+    /// Describes a board in the game.
+    /// </summary>
+    public class Board
+    {
+        /// <summary>
+        /// Creates a new board with the given name of the given size.
+        /// </summary>
+        public const this(set string Name, set Vector2<int> Size)
+            in { Size.X > 0 }
+            in { Size.Y > 0 }
+        {
+            this.pcs = new vector<PieceBase>();
+        }
+        /// <summary>
+        /// Creates a new board with the given name of the given size containing the given pieces.
+        /// </summary>
+        public const this(set string Name, set Vector2<int> Size, vector<PieceBase> Pieces)
+            in { Size.X > 0 }
+            in { Size.Y > 0 }
+        {
+            this.pcs = Pieces;
+        }
+
+        invariant { Size.X > 0 }
+        invariant { Size.Y > 0 }
+
+        /// <summary>
+        /// Gets the field's name.
+        /// </summary>
+        public string Name { const get; private set; }
+        /// <summary>
+        /// Gets the board's dimensions.
+        /// </summary>
+        public Vector2<int> Size
+        {
+            const get
+                out (result) { result.X > 0 }
+                out (result) { result.Y > 0 };
+            private set;
+        }
+        /// <summary>
+        /// Gets the board's width.
+        /// </summary>
+        public int Width
+        {
+            const get
+                out (result) { result > 0 }
+            {
+                return Size.X;
+            }
+        }
+        /// <summary>
+        /// Gets the board's height.
+        /// </summary>
+        public int Height
+        {
+            const get
+                out (result) { result > 0 }
+            {
+                return Size.Y;
+            }
+        }
+
+        /// <summary>
+        /// Gets a boolean value that indicates whether the given point is in the board or not.
+        /// </summary>
+        public const bool InRange(Vector2<int> Point)
+        {
+            return Point.X >= 0 && Point.Y >= 0 && Point.X < Width && Point.Y < Height;
+        }
+
+        private vector<PieceBase> pcs;
+
+        /// <summary>
+        /// Find the piece at the given coordinates.
+        /// If no piece is found, return null.
+        /// If the given position contains one or more terrain pieces and
+        /// one other piece, the latter is returned.
+        /// </summary>
+        /// <remarks>
+        /// Treating terrain pieces as second class citizens is a useful property,
+        /// because it allows us to prioritize actors, while leaving gates and buttons
+        /// in the background.
+        /// </remarks>
+        public PieceBase this[Vector2<int> pos]
+        {
+            const get
+                in { this.InRange(pos) }
+            {
+                PieceBase terrainPiece = null;
+                foreach (var p in Pieces)
+                    if (p.Position == pos)
+                {
+                    if (p.IsTerrain) terrainPiece = p;
+                    else return p;
+                }
+                return terrainPiece;
+            }
+        }
+
+        /// <summary>
+        /// Find the piece at the given coordinates. If no piece is found, return null.
+        /// </summary>
+        public PieceBase this[int X, int Y]
+        {
+            const get
+                in { this.InRange(new Vector2<int>(X, Y)) }
+            {
+                return this[new Vector2<int>(X, Y)];
+            }
+        }
+
+        /// <summary>
+        /// Gets all pieces on the board.
+        /// </summary>
+        public vector<PieceBase> Pieces { const get return pcs; }
+
+        /// <summary>
+        /// Adds a piece to the board.
+        /// </summary>
+        public void AddPiece(PieceBase Value)
+            in { Value.IsTerrain ||
+                 this[Value.Position] == null ||
+                 this[Value.Position].IsTerrain }
+            in { this.InRange(Value.Position) }
+        {
+            pcs.push_back(Value);
+        }
+
+        /// <summary>
+        /// Gets a boolean value that tells if this board contains the given
+        /// piece.
+        /// </summary>
+        public const bool HasPiece(PieceBase Value)
+        {
+            foreach (var p in Pieces)
+                if (p == Value)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Removes a piece from the board, and returns a boolean that
+        /// tells if the piece has been removed.
+        /// </summary>
+        public bool RemovePiece(PieceBase Value)
+            out { !HasPiece(Value) }
+        {
+            if (!HasPiece(Value))
+            {
+                return false;
+            }
+
+            int i = 0;
+            while (pcs[i] != Value)
+            {
+                i++;
+            }
+
+            while (i < (int)pcs.size() - 1)
+            {
+                pcs[i] = pcs[i + 1];
+                i++;
+            }
+            pcs.pop_back();
+            return true;
+        }
+
+        /// <summary>
+        /// Gets all players on the board.
+        /// </summary>
+        public const vector<Player> GetPlayers()
+        {
+            var results = new vector<Player>();
+            foreach (var item in Pieces)
+                if (item is Player)
+            {
+                results.push_back((Player)item);
+            }
+            return results;
+        }
+
+        /// <summary>
+        /// Gets the first actor with the given name if they can be found. Otherwise, null.
+        /// </summary>
+        public const Actor GetActorOrNull(string Name)
+            out (result) { result == null || InRange(result.Position) }
+        {
+            foreach (var item in Pieces)
+                if (item is Actor)
+            {
+                var actor = (Actor)item;
+                if (actor.Name == Name)
+                {
+                    return actor;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gets a boolean value that tells if this board contains the given actor.
+        /// </summary>
+        public const bool HasActor(string Name)
+        {
+            return GetActorOrNull(Name) != null;
+        }
+
+        /// <summary>
+        /// Gets the first actor with the given name.
+        /// </summary>
+        public const Actor GetActor(string Name)
+            in { HasActor(Name) }
+            out (result) { result != null } // Make sure the player is in the game.
+            out (result) { InRange(result.Position) }
+        {
+            return GetActorOrNull(Name);
+        }
+    }
+}

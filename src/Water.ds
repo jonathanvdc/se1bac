@@ -1,0 +1,37 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Describes some water in the game.
+    /// </summary>
+    public class Water : Obstacle
+    {
+        /// <summary>
+        /// Creates a new water object.
+        /// </summary>
+        public const this(set Vector2<int> Position, set bool Movable)
+        {
+            ObstacleType = "water";
+        }
+
+        /// <summary>
+        /// Has a piece collide with this piece.
+        /// A boolean is returned that indicates whether this piece has moved or not.
+        /// </summary>
+        public override bool Collide(Collision Event)
+            in { Event.StaticPiece == this }
+        {
+            var mp = Event.MovingPiece;
+            var sp = Event.StaticPiece;
+            var scene = Event.Scene;
+            if (mp is Obstacle)
+            {
+                scene.RemovePiece(mp);
+                scene.RemovePiece(sp);
+                return true;
+            }
+
+            scene.RemovePiece(mp);
+            return false;
+        }
+    }
+}

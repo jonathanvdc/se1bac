@@ -1,0 +1,43 @@
+using std;
+
+namespace Arcade
+{
+    /// <summary>
+    /// Defines a common interface for UI handlers: objects that manage and display
+    /// the state of a board.
+    /// </summary>
+    /// <remarks>
+    /// This interface is not particularly clear about its preconditions and
+    /// postconditions. This is by design: IUIHandler objects are rarely (if ever) used
+    /// by this interface. Classes like UIHandlerBase, which implement this interface,
+    /// should be used instead. This interface exists mainly to prevent API divergence
+    /// of the UI handler types.
+    /// </remarks>
+    public interface IUIHandler
+    {
+        /// <summary>
+        /// Initializes the UI handler and displays the board right away.
+        /// </summary>
+        void Initialize(Board Value)
+            in { Value != null }
+            in { !IsInitialized };
+
+        /// <summary>
+        /// Gets a boolean flag that indicates whether the UI handler has been initialized.
+        /// </summary>
+        bool IsInitialized { const get; }
+
+        /// <summary>
+        /// Displays the board.
+        /// </summary>
+        void Display()
+            in { this.IsInitialized };
+
+        /// <summary>
+        /// Applies a command to the board.
+        /// </summary>
+        void Apply(ICommand<Board> Command)
+            in { Command != null }
+            in { IsInitialized };
+    }
+}

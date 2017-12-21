@@ -1,0 +1,32 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Describes a trap on the board.
+    /// </summary>
+    public class Trap : Obstacle
+    {
+        /// <summary>
+        /// Creates a new trap object.
+        /// </summary>
+        public const this(set Vector2<int> Position)
+        {
+            ObstacleType = "valstrik";
+            Movable = false;
+        }
+
+        public override bool Collide(Collision Event)
+            in { Event.StaticPiece == this }
+        {
+            // Surprise
+            Event.Scene.RemovePiece(Event.StaticPiece);
+            return Event.Scene.RemovePiece(Event.MovingPiece);
+        }
+
+        public override bool Attack(Collision Event)
+            in { Event.StaticPiece == this }
+            out (result) { result }
+        {
+            return Event.Scene.RemovePiece(Event.StaticPiece);
+        }
+    }
+}

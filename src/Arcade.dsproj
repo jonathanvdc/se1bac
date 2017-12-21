@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<Project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="Arcade">
+  <Setter Property="TargetPlatform" Value="C++" />
+  <Setter Property="AssemblyName" Value="Arcade" />
+  <Option Key="accessor-names" Value="upper-camel" />
+  <Option Key="Wrelax-generic-operators" Value="true" />
+  <Option Key="pedantic" Value="true" />
+  <ItemGroup>
+    <RuntimeLibrary Include="PortableRT" />
+    <RuntimeLibrary Include="PlatformRT" />
+    <RuntimeLibrary Include="System" />
+    <RuntimeLibrary Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Vector2.ds" />
+    <Compile Include="PieceBase.ds" />
+    <Compile Include="Actor.ds" />
+    <Compile Include="Obstacle.ds" />
+    <Compile Include="Player.ds" />
+    <Compile Include="Monster.ds" />
+    <Compile Include="Board.ds" />
+    <Compile Include="Water.ds" />
+    <Compile Include="Trap.ds" />
+    <Compile Include="Gate.ds" />
+    <Compile Include="Button.ds" />
+    <Compile Include="Goal.ds" />
+    <Compile Include="Collision.ds" />
+    <Compile Include="ICommand.ds" />
+    <Compile Include="MoveCommand.ds" />
+    <Compile Include="AttackCommand.ds" />
+    <Compile Include="CompositeCommand.ds" />
+    <Compile Include="IUIHandler.ds" />
+    <Compile Include="UIHandlerBase.ds" />
+    <Compile Include="PieceUIHandlerBase.ds" />
+    <Compile Include="TextUIHandler.ds" />
+    <Compile Include="ASCIIArtUIHandler.ds" />
+    <Compile Include="CGUIHandler.ds" />
+    <Compile Include="HtmlUIHandler.ds" />
+    <Compile Include="XmlUIHandler.ds" />
+    <Compile Include="CommandLineUI.ds" />
+  </ItemGroup>
+</Project>

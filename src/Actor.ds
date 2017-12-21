@@ -1,0 +1,37 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Describes a piece that can move on its own.
+    /// </summary>
+    public virtual class Actor : PieceBase
+    {
+        /// <summary>
+        /// Creates a new actor instance.
+        /// </summary>
+        public const this(set string Name);
+
+        invariant { Name != "" }
+
+        /// <summary>
+        /// Gets the actor's name.
+        /// </summary>
+        public string Name { const get; private set; }
+
+        public override bool Movable { const get return false; }
+
+        public override bool IsTerrain { const get return false; }
+
+        public override void Move(Vector2<int> Target)
+            out { this.Position == Target }
+        {
+            this.Position = Target;
+        }
+
+        public override bool Attack(Collision Event)
+            in { Event.StaticPiece == this }
+            out (result) { result }
+        {
+            return Event.Scene.RemovePiece(Event.StaticPiece);
+        }
+    }
+}

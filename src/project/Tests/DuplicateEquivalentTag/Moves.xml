@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<BEWEGINGEN>
+    <BEWEGING>
+        <SPELERNAAM>Chip</SPELERNAAM>
+        <ID>Patrick</ID>
+        <RICHTING>OMLAAG</RICHTING>
+    </BEWEGING>
+</BEWEGINGEN>

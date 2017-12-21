@@ -1,0 +1,28 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Describes a player in the game.
+    /// </summary>
+    public class Player : Actor
+    {
+        /// <summary>
+        /// Creates a new player instance from the given name.
+        /// </summary>
+        public const this(set Vector2<int> Position, string Name)
+            : base(Name)
+            in { Name != "" };
+
+        public virtual bool Collide(Collision Event)
+            in { Event.StaticPiece == this }
+        {
+            if (Event.MovingPiece is Monster)
+            {
+                return Event.Scene.RemovePiece(Event.StaticPiece);
+            }
+            else
+            {
+                return CollideAndMove(Event);
+            }
+        }
+    }
+}

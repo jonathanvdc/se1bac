@@ -1,0 +1,61 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Describes a button on the board.
+    /// A button is a terrain piece that gates may use to decide whether they
+    /// are in an opened state or not.
+    /// </summary>
+    public class Button : Obstacle
+    {
+        /// <summary>
+        /// Creates a new button object at the given position.
+        /// </summary>
+        public const this(set Vector2<int> Position)
+        {
+            ObstacleType = "knop";
+            Movable = false;
+        }
+
+        public override bool IsTerrain { const get return true; }
+
+        /// <summary>
+        /// Gets this button's associated gate, if any. Otherwise, null.
+        /// </summary>
+        public const Gate GetAssociatedGate(Board Scene)
+            in { Scene != null }
+        {
+            foreach (var item in Scene.Pieces)
+                if (item is Gate)
+            {
+                var gate = (Gate)item;
+                if (gate.IsAssociatedButton((Button*)this))
+                {
+                    return gate;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gets this button's associated gate's name. If this button does not
+        /// have an associated gate, the empty string is returned.
+        /// </summary>
+        public const string GetAssociatedGateName(Board Scene)
+            in { Scene != null }
+        {
+            var gate = GetAssociatedGate(Scene);
+            if (gate == null)
+                return "";
+            else
+                return gate.Name;
+        }
+
+        public override bool Collide(Collision Event)
+            in { Event.StaticPiece == this }
+        {
+            return true; // Pieces may move onto this button at any time.
+                         // The associated gate object will poll whether this button
+                         // is open or not.
+        }
+    }
+}

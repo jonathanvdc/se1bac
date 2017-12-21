@@ -1,0 +1,95 @@
+namespace Arcade
+{
+    /// <summary>
+    /// A base class for pieces on the board.
+    /// </summary>
+    public abstract class PieceBase
+    {
+        /// <summary>
+        /// Creates a new piece at the origin.
+        /// </summary>
+        public const this() { this.Position = new Vector2<int>(0, 0); }
+        /// <summary>
+        /// Creates a new piece at the given position.
+        /// </summary>
+        public const this(set Vector2<int> Position);
+
+        /// <summary>
+        /// Gets or sets the piece's position.
+        /// </summary>
+        public Vector2<int> Position { const get; protected set; }
+        /// <summary>
+        /// Gets the piece's X-coordinate.
+        /// </summary>
+        public int X { const get return Position.X; }
+        /// <summary>
+        /// Gets the piece's Y-coordinate.
+        /// </summary>
+        public int Y { const get return Position.Y; }
+
+        /// <summary>
+        /// Gets a boolean value that indicates whether this piece is a terrain piece,
+        /// i.e. it can share its position with another piece.
+        /// </summary>
+        public abstract bool IsTerrain { abstract const get; }
+
+        /// <summary>
+        /// Finds out if the given piece can be moved or not.
+        /// </summary>
+        public abstract bool Movable { abstract const get; }
+
+        /// <summary>
+        /// Moves the piece to the given target position.
+        /// </summary>
+        public virtual void Move(Vector2<int> Target)
+            in { this.Movable }
+            out { this.Position == Target }
+        {
+            this.Position = Target;
+        }
+
+        /// <summary>
+        /// The default collide-and-move behavior for pieces.
+        /// </summary>
+        protected bool CollideAndMove(Collision Event)
+            in { Event.StaticPiece == this }
+        {
+            if (!this.Movable)
+                return false;
+
+            var goalPos = Position + Event.Offset;
+            if (!Event.Scene.InRange(goalPos))
+                return false;
+
+            var other = Event.Scene[goalPos];
+            if (other != null && !other.Collide(new Collision(Event.Scene, Event.StaticPiece, other)))
+            {
+                return false;
+            }
+
+            Move(Position + Event.Offset);
+            return true;
+        }
+
+        /// <summary>
+        /// Has a piece collide with this piece.
+        /// A boolean is returned that indicates whether another piece is free
+        /// to move onto this piece's (previous) position or not.
+        /// </summary>
+        public virtual bool Collide(Collision Event)
+            in { Event.StaticPiece == this }
+        {
+            return CollideAndMove(Event);
+        }
+
+        /// <summary>
+        /// Attacks this piece. A boolean is returned which indicates whether it
+        /// has been destroyed or not.
+        /// </summary>
+        public virtual bool Attack(Collision Event)
+            in { Event.StaticPiece == this }
+        {
+            return false;
+        }
+    }
+}

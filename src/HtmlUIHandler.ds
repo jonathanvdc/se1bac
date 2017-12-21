@@ -1,0 +1,138 @@
+using std;
+
+namespace Arcade
+{
+    /// <summary>
+    /// Defines a UI handler that outputs color-coded HTML content.
+    /// </summary>
+    public class HtmlUIHandler : UIHandlerBase
+    {
+        /// <summary>
+        /// Creates a new HTML UI handler.
+        /// </summary>
+        public const this(ostream* outputStream)
+            : base(outputStream)
+            in { outputStream != null };
+
+        public override void Display()
+            in { IsInitialized }
+        {
+            *outputStream << "<!DOCTYPE html>" << "\n";
+            *outputStream << "<html>" << "\n";
+            *outputStream << "<head>" << "\n";
+            *outputStream << "<style>" << "\n";
+            *outputStream << "td {" << "\n"
+                          << "text-align: center;" << "\n"
+                          << "}" << "\n";
+            *outputStream << ".water {" << "\n"
+                          << "background-color: lightblue;" << "\n"
+                          << "}" << "\n";
+            *outputStream << ".player {" << "\n"
+                          << "background-color: yellow;" << "\n"
+                          << "}" << "\n";
+            *outputStream << ".monster {" << "\n"
+                          << "background-color: orange;" << "\n"
+                          << "}" << "\n";
+            *outputStream << ".goal {" << "\n"
+                          << "background-color: lightgreen;" << "\n"
+                          << "}" << "\n";
+            *outputStream << ".trap {" << "\n"
+                          << "background-color: darkred;" << "\n"
+                          << "}" << "\n";
+            *outputStream << ".button {" << "\n"
+                          << "background-color: purple;" << "\n"
+                          << "}" << "\n";
+            *outputStream << ".obstacle {" << "\n"
+                          << "background-color: gray;" << "\n"
+                          << "}" << "\n";
+            *outputStream << ".movableobstacle {" << "\n"
+                          << "background-color: lightgray;" << "\n"
+                          << "}" << "\n";
+            *outputStream << ".gate {" << "\n"
+                          << "background-color: brown;" << "\n"
+                          << "}" << "\n";
+
+            *outputStream << "</style>" << "\n";
+            *outputStream << "</head>" << "\n";
+            *outputStream << "<body>" << "\n";
+            *outputStream << "<table style=\"width:100%\">" << "\n";
+
+            for (int y = board.Height - 1; y >= 0; y--)
+            {
+                *outputStream << "<tr>" << "\n";
+                for (int x = 0; x < board.Width; x++)
+                {
+                    *outputStream << showPiece(board[x, y]);
+                }
+                *outputStream << "</tr>" << "\n";
+            }
+
+            *outputStream << "</table>" << "\n";
+            *outputStream << "</body>" << "\n";
+            *outputStream << "</html>" << "\n";
+        }
+
+        /// <summary>
+        /// Displays the given piece.
+        /// </summary>
+        private string showPiece(PieceBase piece)
+        {
+            if (piece == null)
+            {
+                return "<td/>";
+            }
+            else if (piece is Player)
+            {
+                return "<td class=\"player\">Y</td>";
+            }
+            else if (piece is Goal)
+            {
+                return "<td class=\"goal\">X</td>";
+            }
+            else if (piece is Water)
+            {
+                return "<td class=\"water\">~</td>";
+            }
+            else if (piece is Button)
+            {
+                return "<td class=\"button\">.</td>";
+            }
+            else if (piece is Gate)
+            {
+                if (((Gate) piece).IsOpened(board))
+                    return "<td class=\"gate\">| |</td>";
+                else
+                    return "<td class=\"gate\">|=|</td>";
+            }
+            else if (piece is Monster)
+            {
+                return "<td class=\"monster\">(V)(;,,;)(V)</td>";
+            }
+            else if (piece is Trap)
+            {
+                return "<td class=\"trap\">\\^/</td>";
+            }
+            else if (piece is Obstacle)
+            {
+                var obs = (Obstacle) piece;
+                string name;
+                if (obs.ObstacleType == "ton")
+                    name = "O";
+                else if (obs.ObstacleType == "muur")
+                    name = "#";
+                else
+                    name = "?";
+
+                if (obs.Movable)
+                {
+                    return "<td class=\"movableobstacle\">" + name + "</td>";
+                }
+                else
+                {
+                    return "<td class=\"obstacle\">" + name + "</td>";
+                }
+            }
+            return "<td>?</td>";
+        }
+    }
+}

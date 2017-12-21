@@ -1,0 +1,29 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Describes the board's goal square. When the player walks on here, the simulation ends.
+    /// </summary>
+    public class Goal : Obstacle
+    {
+        /// <summary>
+        /// Creates a new goal piece at the given position.
+        /// </summary>
+        public const this(set Vector2<int> Position)
+        {
+            ObstacleType = "doel";
+            Movable = false;
+        }
+
+        public override bool IsTerrain { const get return true; }
+
+        /// <summary>
+        /// Figures out whether the given player is standing on this goal.
+        /// </summary>
+        public const bool IsPlayerVictorious(Board Scene, Player Winner)
+            return Scene[Position] == Winner;
+
+        public override bool Collide(Collision Event)
+                in { Event.StaticPiece == this }
+            return true;
+    }
+}

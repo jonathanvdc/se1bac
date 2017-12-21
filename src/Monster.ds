@@ -1,0 +1,25 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Describes a monster in the game.
+    /// </summary>
+    public class Monster : Actor
+    {
+        /// <summary>
+        /// Creates a new monster instance from the given name.
+        /// </summary>
+        public const this(set Vector2<int> Position, string Name)
+            : base(Name)
+            in { Name != "" };
+
+        public virtual bool Collide(Collision Event)
+            in { Event.StaticPiece == this }
+        {
+            if (Event.MovingPiece is Actor)
+            {
+                return Event.Scene.RemovePiece(Event.MovingPiece);
+            }
+            else return false;
+        }
+    }
+}

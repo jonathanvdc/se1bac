@@ -1,0 +1,98 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Describes a gate on the board.
+    /// Gates use a number of "associated buttons" to decide whether they are in an opened
+    /// state or not.
+    /// </summary>
+    public class Gate : Obstacle
+    {
+        /// <summary>
+        /// Creates a new gate piece at the given position and with the given
+        /// associated buttons.
+        /// </summary>
+        public const this(set Vector2<int> Position, set string Name, set Button[] AssociatedButtons)
+        {
+            ObstacleType = "poort";
+            Movable = false;
+        }
+
+        /// <summary>
+        /// Gets or sets the gate's name.
+        /// </summary>
+        public string Name { const get; private set; }
+
+        // This should probably not happen.
+        invariant { !OverlapsWithButtons() }
+
+        /// <summary>
+        /// Determines whether the given button is one of this gate's associated buttons.
+        /// </summary>
+        public const bool IsAssociatedButton(Button* Piece)
+        {
+            foreach (var item in AssociatedButtons)
+                if ((Button*)item == Piece)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Figures out whether this gate overlaps with its own buttons.
+        /// </summary>
+        public const bool OverlapsWithButtons()
+        {
+            foreach (var item in AssociatedButtons)
+                if (item.Position == Position)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Figures out if all of this gate's buttons are in the given board.
+        /// </summary>
+        public const bool CheckButtonsInBoard(Board Scene)
+        {
+            foreach (var item in AssociatedButtons)
+                if (!Scene.HasPiece(item))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public override bool IsTerrain { const get return true; }
+
+        /// <summary>
+        /// Gets this gate's associated buttons.
+        /// </summary>
+        public Button[] AssociatedButtons { const get; private set; }
+
+        /// <summary>
+        /// Figures out whether the gate is currently
+        /// in an opened state.
+        /// </summary>
+        public const bool IsOpened(Board Scene)
+            in { CheckButtonsInBoard(Scene) }
+        {
+            foreach (var item in AssociatedButtons)
+            {
+                if (!Scene[item.Position].IsTerrain)
+                    return true;
+            }
+            return false;
+        }
+
+        public override bool Collide(Collision Event)
+            in { Event.StaticPiece == this }
+            in { CheckButtonsInBoard(Event.Scene) }
+        {
+            // Actors may move onto this gate if another piece is standing on the associated
+            // button.
+            return IsOpened(Event.Scene);
+        }
+    }
+}

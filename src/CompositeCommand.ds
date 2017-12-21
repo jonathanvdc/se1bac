@@ -1,0 +1,28 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Defines a sequence of commands that can be used as a single command.
+    /// </summary>
+    public class CompositeCommand<T> : ICommand<T>
+    {
+        /// <summary>
+        /// Creates a new composite command.
+        /// </summary>
+        public const this(set ICommand<T>[] Commands);
+        
+        /// <summary>
+        /// Gets an array of commands that will be executed in sequence.
+        /// </summary>
+        public ICommand<T>[] Commands { const get; private set; }
+        
+        public bool Execute(T Target)
+        {
+            bool result = true;
+            foreach (var item in Commands)
+            {
+                if (!item.Execute(Target)) result = false;
+            }
+            return result;
+        }
+    }
+}

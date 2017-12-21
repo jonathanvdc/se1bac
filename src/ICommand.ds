@@ -1,0 +1,24 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Defines common functionality for generic commands, i.e. actions that can be applied to a given target.
+    /// </summary>
+    public interface ICommand<in T>
+    {
+        /// <summary>
+        /// Executes the command and returns a boolean that tells if the operation has completed successfully.
+        /// </summary>
+        bool Execute(T Target);
+    }
+
+    /// <summary>
+    /// Defines an empty command, i.e. a command that does nothing.
+    /// </summary>
+    public static class EmptyCommand<T> : ICommand<T>
+    {
+        public bool Execute(T Target)
+        {
+            return true;
+        }
+    }
+}

@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArcadeGame", "ArcadeGame.vcxproj", "{6E60F00A-F21F-4F56-BB20-48024B694E83}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArcadeGameTest", "ArcadeGameTest.vcxproj", "{D11A1C55-9E7D-4303-87E6-8FBD37B10EB3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6E60F00A-F21F-4F56-BB20-48024B694E83} = {6E60F00A-F21F-4F56-BB20-48024B694E83}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArcadeGameUI", "ArcadeGameUI.vcxproj", "{152F67B8-F9B5-4CED-AB59-32A10089EC83}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E60F00A-F21F-4F56-BB20-48024B694E83}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6E60F00A-F21F-4F56-BB20-48024B694E83}.Debug|Win32.Build.0 = Debug|Win32
+		{6E60F00A-F21F-4F56-BB20-48024B694E83}.Release|Win32.ActiveCfg = Release|Win32
+		{6E60F00A-F21F-4F56-BB20-48024B694E83}.Release|Win32.Build.0 = Release|Win32
+		{D11A1C55-9E7D-4303-87E6-8FBD37B10EB3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D11A1C55-9E7D-4303-87E6-8FBD37B10EB3}.Debug|Win32.Build.0 = Debug|Win32
+		{D11A1C55-9E7D-4303-87E6-8FBD37B10EB3}.Release|Win32.ActiveCfg = Release|Win32
+		{D11A1C55-9E7D-4303-87E6-8FBD37B10EB3}.Release|Win32.Build.0 = Release|Win32
+		{152F67B8-F9B5-4CED-AB59-32A10089EC83}.Debug|Win32.ActiveCfg = Debug|Win32
+		{152F67B8-F9B5-4CED-AB59-32A10089EC83}.Debug|Win32.Build.0 = Debug|Win32
+		{152F67B8-F9B5-4CED-AB59-32A10089EC83}.Release|Win32.ActiveCfg = Release|Win32
+		{152F67B8-F9B5-4CED-AB59-32A10089EC83}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

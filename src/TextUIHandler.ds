@@ -1,0 +1,256 @@
+using std;
+
+namespace Arcade
+{
+    /// <summary>
+    /// Describes a textual UI handler: a UI handler that outputs text to
+    /// display the current state of the board.
+    /// </summary>
+    public class TextUIHandler : UIHandlerBase
+    {
+        /// <summary>
+        /// Creates a new textual UI handler from the given output stream, error
+        /// stream and a boolean that indicates whether commands should be applied
+        /// right away or stored.
+        /// </summary>
+        public const this(ostream* outputStream, set ostream* errorStream, set bool ApplyCommands)
+            : base(outputStream)
+            in { outputStream != null }
+            in { errorStream != null };
+
+        invariant { ErrorStream != null }
+
+        private ostream* errorStream;
+        public ostream* ErrorStream
+        {
+            const get
+                return errorStream;
+            set
+                in { value != null }
+                errorStream = value;
+        }
+
+        /// <summary>
+        /// Gets a boolean flag that indicates whether incoming commands will be applied to the board or written to an output stream.
+        /// </summary>
+        public bool ApplyCommands { const get; private set; }
+
+        /// <summary>
+        /// "Freezes" the board: new command will no longer be applied.
+        /// The resulting behavior is exactly the same as setting 'ApplyCommands'
+        /// to false during object construction.
+        /// </summary>
+        public void Freeze()
+            out { !ApplyCommands }
+        {
+            this.ApplyCommands = false;
+        }
+
+        /// <summary>
+        /// Applies a command to the board.
+        /// </summary>
+        public override void Apply(ICommand<Board> Command)
+            in { Command != null }
+            in { IsInitialized }
+        {
+            if (ApplyCommands)
+            {
+                if (!Command.Execute(board))
+                    *errorStream << "Commando kon niet uitgevoerd worden.\n\n";
+            }
+            else
+            {
+                Display(Command);
+            }
+        }
+
+        public override void Display()
+            in { IsInitialized }
+        {
+            *outputStream << "Het huidige speelveld is " << board.Name << ":\n";
+            *outputStream << "Eigenschappen van dit speelveld:\n";
+            *outputStream << "-Breedte " << board.Width << "\n";
+            *outputStream << "-Lengte " << board.Height;
+            foreach (var item in board.Pieces)
+            {
+                *outputStream << "\n\n";
+                Display(item);
+            }
+        }
+
+        /// <summary>
+        /// Prints a piece's information.
+        /// </summary>
+        private void Display(PieceBase Piece)
+            in { Piece != null }
+        {
+            if (Piece is Player)
+            {
+                Display((Player)Piece);
+            }
+            else if (Piece is Monster)
+            {
+                Display((Monster)Piece);
+            }
+            else if (Piece is Gate)
+            {
+                Display((Gate)Piece);
+            }
+            else if (Piece is Button)
+            {
+                Display((Button)Piece);
+            }
+            else if (Piece is Water)
+            {
+                Display((Water)Piece);
+            }
+            else if (Piece is Obstacle)
+            {
+                Display((Obstacle)Piece);
+            }
+            else
+            {
+                *outputStream << "Er staat een onbekend stuk op positie " << Piece.Position << ".";
+            }
+        }
+
+        /// <summary>
+        /// Prints a player piece's status.
+        /// </summary>
+        private void Display(Player Piece)
+            in { Piece != null }
+        {
+            *outputStream << "Speler " << Piece.Name << " bevindt zich in dit speeldveld op positie " << Piece.Position << ".";
+        }
+
+        /// <summary>
+        /// Prints a monster piece's status.
+        /// </summary>
+        private void Display(Monster Piece)
+            in { Piece != null }
+        {
+            *outputStream << "Er bevindt zich een monster op positie " << Piece.Position << ".";
+        }
+
+        /// <summary>
+        /// Prints a gate piece's status.
+        /// </summary>
+        private void Display(Gate Piece)
+            in { Piece != null }
+        {
+            *outputStream << "Er bevindt zich een poort (met id " << Piece.Name << ") op positie " << Piece.Position << ".";
+        }
+
+        /// <summary>
+        /// Prints a button piece's status.
+        /// </summary>
+        private void Display(Button Piece)
+            in { Piece != null }
+            in { IsInitialized }
+        {
+            var gate = Piece.GetAssociatedGate(board);
+            if (gate != null)
+                *outputStream << "Er bevindt zich een knop (gelinkt aan poort " <<
+                                 gate.Name << ") op positie " << Piece.Position << ".";
+            else
+                *outputStream << "Er bevindt zich een knop (niet gelinkt aan een poort) op positie " <<
+                                  Piece.Position << ".";
+        }
+
+        /// <summary>
+        /// Prints a water piece's status.
+        /// </summary>
+        private void Display(Water Piece)
+            in { Piece != null }
+        {
+            *outputStream << "Er bevindt zich " << Piece.ObstacleType << " op positie " << Piece.Position << ".";
+        }
+
+        /// <summary>
+        /// Prints an obstacle piece's status.
+        /// </summary>
+        private void Display(Obstacle Piece)
+            in { Piece != null }
+        {
+            *outputStream << "Er bevindt zich een " << Piece.ObstacleType << " op positie " << Piece.Position << ".";
+        }
+
+        /// <summary>
+        /// Prints a generic command.
+        /// </summary>
+        private void Display(ICommand<Board> Command)
+            in { Command != null }
+        {
+            if (Command is MoveCommand)
+            {
+                var moveCmd = (MoveCommand)Command;
+                Display(moveCmd);
+            }
+            else if (Command is AttackCommand)
+            {
+                var attackCmd = (AttackCommand)Command;
+                Display(attackCmd);
+            }
+            else
+            {
+                *outputStream << "Een onbekende actie zal nog uitgevoerd worden.";
+            }
+            *outputStream << "\n\n";
+        }
+
+        /// <summary>
+        /// Prints an offset.
+        /// </summary>
+        private void DisplayOffset(Vector2<int> Offset)
+        {
+            if (Offset.X == 0 && Offset.Y == -1)
+            {
+                *outputStream << "Omlaag";
+            }
+            else if (Offset.X == 0 && Offset.Y == 1)
+            {
+                *outputStream << "Omhoog";
+            }
+            else if (Offset.X == 1 && Offset.Y == 0)
+            {
+                *outputStream << "Rechts";
+            }
+            else if (Offset.X == -1 && Offset.Y == 0)
+            {
+                *outputStream << "Links";
+            }
+            else
+            {
+                *outputStream << Offset;
+            }
+        }
+
+        /// <summary>
+        /// Prints an attack command.
+        /// </summary>
+        private void Display(AttackCommand Command)
+            in { Command != null }
+        {
+            if (Command.Target is Player)
+                *outputStream << "Speler ";
+            else
+                *outputStream << "Monster ";
+            *outputStream << Command.Target.Name << " zal volgende aanval nog uitvoeren:\n";
+            DisplayOffset(Command.Offset);
+        }
+
+        /// <summary>
+        /// Prints a move command.
+        /// </summary>
+        private void Display(MoveCommand Command)
+            in { Command != null }
+        {
+            if (Command.Target is Player)
+                *outputStream << "Speler ";
+            else
+                *outputStream << "Monster ";
+            *outputStream << Command.Target.Name << " zal volgende beweging nog uitvoeren:\n";
+            DisplayOffset(Command.Offset);
+        }
+    }
+}

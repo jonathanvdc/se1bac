@@ -1,0 +1,126 @@
+Bestand: Level3Output.txt
+
+Het huidige speelveld is Level:
+Eigenschappen van dit speelveld:
+-Breedte 10
+-Lengte 10
+
+Er bevindt zich een knop (gelinkt aan poort gate1) op positie (8, 8).
+
+Speler Chip bevindt zich in dit speeldveld op positie (5, 1).
+
+Er bevindt zich een muur op positie (0, 9).
+
+Er bevindt zich een muur op positie (1, 9).
+
+Er bevindt zich een muur op positie (2, 9).
+
+Er bevindt zich een muur op positie (3, 9).
+
+Er bevindt zich een muur op positie (4, 9).
+
+Er bevindt zich een muur op positie (5, 9).
+
+Er bevindt zich een muur op positie (6, 9).
+
+Er bevindt zich een muur op positie (7, 9).
+
+Er bevindt zich een muur op positie (8, 9).
+
+Er bevindt zich een muur op positie (9, 9).
+
+Er bevindt zich een muur op positie (0, 8).
+
+Er bevindt zich een monster op positie (2, 8).
+
+Er bevindt zich een muur op positie (4, 8).
+
+Er bevindt zich een doel op positie (5, 8).
+
+Er bevindt zich een muur op positie (6, 8).
+
+Er bevindt zich een muur op positie (9, 8).
+
+Er bevindt zich een muur op positie (0, 7).
+
+Er bevindt zich een ton op positie (2, 7).
+
+Er bevindt zich een muur op positie (4, 7).
+
+Er bevindt zich een poort (met id gate1) op positie (5, 7).
+
+Er bevindt zich een muur op positie (6, 7).
+
+Er bevindt zich een muur op positie (9, 7).
+
+Er bevindt zich een muur op positie (0, 6).
+
+Er bevindt zich een muur op positie (2, 6).
+
+Er bevindt zich een muur op positie (7, 6).
+
+Er bevindt zich een muur op positie (9, 6).
+
+Er bevindt zich een muur op positie (0, 5).
+
+Er bevindt zich een muur op positie (2, 5).
+
+Er bevindt zich een muur op positie (4, 5).
+
+Er bevindt zich een muur op positie (5, 5).
+
+Er bevindt zich een muur op positie (7, 5).
+
+Er bevindt zich een muur op positie (9, 5).
+
+Er bevindt zich een muur op positie (0, 4).
+
+Er bevindt zich een muur op positie (9, 4).
+
+Er bevindt zich een muur op positie (0, 3).
+
+Er bevindt zich een muur op positie (2, 3).
+
+Er bevindt zich een muur op positie (4, 3).
+
+Er bevindt zich een muur op positie (5, 3).
+
+Er bevindt zich een muur op positie (7, 3).
+
+Er bevindt zich een muur op positie (9, 3).
+
+Er bevindt zich een muur op positie (0, 2).
+
+Er bevindt zich een muur op positie (2, 2).
+
+Er bevindt zich een muur op positie (4, 2).
+
+Er bevindt zich een muur op positie (5, 2).
+
+Er bevindt zich een muur op positie (7, 2).
+
+Er bevindt zich een muur op positie (9, 2).
+
+Er bevindt zich een muur op positie (0, 1).
+
+Er bevindt zich een muur op positie (9, 1).
+
+Er bevindt zich een muur op positie (0, 0).
+
+Er bevindt zich een muur op positie (1, 0).
+
+Er bevindt zich een muur op positie (2, 0).
+
+Er bevindt zich een muur op positie (3, 0).
+
+Er bevindt zich een muur op positie (4, 0).
+
+Er bevindt zich een muur op positie (5, 0).
+
+Er bevindt zich een muur op positie (6, 0).
+
+Er bevindt zich een muur op positie (7, 0).
+
+Er bevindt zich een muur op positie (8, 0).
+
+Er bevindt zich een muur op positie (9, 0).

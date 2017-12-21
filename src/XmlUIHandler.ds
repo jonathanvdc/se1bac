@@ -1,0 +1,206 @@
+using std;
+
+namespace Arcade
+{
+    /// <summary>
+    /// A UI handler that outputs XML files which can be parsed by the XML parser.
+    /// This type of output handler may be useful when creating savegames.
+    /// </summary>
+    public class XmlUIHandler : UnorderedPieceUIHandlerBase
+    {
+        /// <summary>
+        /// Creates a new XML UI handler that writes to the given output stream.
+        /// </summary>
+        public const this(ostream* outputStream)
+            : base(outputStream)
+            in { outputStream != null };
+
+        protected override void DisplayHeader()
+        {
+            *outputStream << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+            *outputStream << "<VELD>\n";
+            *outputStream << showStringElement("NAAM", board.Name) << "\n";
+            *outputStream << "<BREEDTE>" << board.Width << "</BREEDTE>\n";
+            *outputStream << "<LENGTE>" << board.Height << "</LENGTE>\n";
+        }
+
+        protected override void DisplayFooter()
+        {
+            *outputStream << "</VELD>" << "\n";
+        }
+
+        #region Actors
+
+        /// <summary>
+        /// Displays the given player piece.
+        /// </summary>
+        protected override void DisplayPlayer(Player Piece)
+            in { Piece != null }
+        {
+            *outputStream << "<SPELER " << showPosition(Piece.Position) << ">\n";
+            *outputStream << showStringElement("NAAM", Piece.Name) << "\n";
+            *outputStream << "</SPELER>\n";
+        }
+
+        /// <summary>
+        /// Displays the given monster piece.
+        /// </summary>
+        protected override void DisplayMonster(Monster Piece)
+            in { Piece != null }
+        {
+            *outputStream << "<MONSTER " << showPosition(Piece.Position) << ">\n";
+            *outputStream << showStringElement("ID", Piece.Name) << "\n";
+            *outputStream << "</MONSTER>\n";
+        }
+
+        #endregion
+
+        #region Obstacles
+
+        /// <summary>
+        /// Displays the given barrel piece.
+        /// </summary>
+        protected override void DisplayBarrel(Obstacle Piece)
+            in { Piece != null }
+        {
+            DisplayObstacle(Piece, Piece.ObstacleType);
+        }
+
+        /// <summary>
+        /// Displays the given wall piece.
+        /// </summary>
+        protected override void DisplayWall(Obstacle Piece)
+            in { Piece != null }
+        {
+            DisplayObstacle(Piece, Piece.ObstacleType);
+        }
+
+        /// <summary>
+        /// Displays a goal piece.
+        /// </summary>
+        protected override void DisplayGoal(Goal Piece)
+            in { Piece != null }
+        {
+            DisplaySimpleObstacle(Piece, "DOEL");
+        }
+
+
+        /// <summary>
+        /// Displays a goal piece.
+        /// </summary>
+        protected override void DisplayGate(Gate Piece, bool IsOpened)
+            in { Piece != null }
+        {
+            *outputStream << "<POORT " << showMovable(Piece.Movable) << " "
+                          << showPosition(Piece.Position) << ">\n";
+
+            *outputStream << showStringElement("ID", Piece.Name) << "\n";
+            *outputStream << "</POORT>\n";
+        }
+
+        /// <summary>
+        /// Displays a water piece.
+        /// </summary>
+        protected override void DisplayWater(Water Piece)
+            in { Piece != null }
+        {
+            DisplayObstacle(Piece, Piece.ObstacleType);
+        }
+
+        /// <summary>
+        /// Displays a button piece.
+        /// </summary>
+        protected override void DisplayButton(Button Piece)
+            in { Piece != null }
+        {
+            string gateId = Piece.GetAssociatedGateName(board);
+            *outputStream << "<KNOP id=\"" << gateId << "\" "
+                          << showPosition(Piece.Position) << "/>\n";
+        }
+
+        /// <summary>
+        /// Displays a trap piece.
+        /// </summary>
+        protected override void DisplayTrap(Trap Piece)
+            in { Piece != null }
+        {
+            DisplaySimpleObstacle(Piece, "VALSTRIK");
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Displays an unknown piece.
+        /// </summary>
+        protected override void DisplayDefault(PieceBase Piece)
+            in { Piece != null }
+        {
+            DisplayObstacle(Piece, "ONBEKEND");
+        }
+
+        /// <summary>
+        /// Write an upper-case name to the output stream.
+        /// </summary>
+        private void WriteUpperName(string Name)
+        {
+            foreach (char item in Name)
+                *outputStream << (char)cctype.toupper((int)item);
+        }
+
+        protected override void DisplayObstacle(Obstacle Piece)
+        {
+            DisplayObstacle(Piece, Piece.ObstacleType);
+        }
+
+        /// <summary>
+        /// Displays an obstacle, which consists of a name tag, a boolean
+        /// that states whether the piece is movable or not, and a position.
+        /// </summary>
+        private void DisplayObstacle(PieceBase Piece, string Name)
+            in { Piece != null }
+        {
+            *outputStream << "<";
+            WriteUpperName(Name);
+            *outputStream << " " << showMovable(Piece.Movable)
+                          << " " << showPosition(Piece.Position) << "/>\n";
+        }
+
+        /// <summary>
+        /// Displays a simple obstacle, which consists of a name tag and a position.
+        /// </summary>
+        private void DisplaySimpleObstacle(PieceBase Piece, string Name)
+            in { Piece != null }
+        {
+            *outputStream << "<";
+            WriteUpperName(Name);
+            *outputStream << " " << showPosition(Piece.Position) << "/>\n";
+        }
+
+        /// <summary>
+        /// Gets a string representation of the 'x' and 'y' position attributes
+        /// set to this position.
+        /// </summary>
+        private const string showPosition(Vector2<int> Position)
+        {
+            return "x=\"" + Position.X + "\" y=\"" + Position.Y + "\"";
+        }
+
+        /// <summary>
+        /// Gets a string representation of the movable attribute set to the given
+        /// boolean argument.
+        /// </summary>
+        private const string showMovable(bool Movable)
+        {
+            if (Movable) return "beweegbaar=\"true\"";
+            else return "beweegbaar=\"false\"";
+        }
+
+        /// <summary>
+        /// Gets a string representation of an XML element that contains a string.
+        /// </summary>
+        private const string showStringElement(string Key, string Value)
+        {
+            return "<" + Key + ">" + Value + "</" + Key + ">";
+        }
+    }
+}

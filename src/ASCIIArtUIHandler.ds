@@ -1,0 +1,155 @@
+using std;
+
+namespace Arcade
+{
+    /// <summary>
+    /// Describes an ASCII art UI handler: a UI handler that outputs ASCII art to
+    /// display the current state of the board.
+    /// </summary>
+    public class ASCIIArtUIHandler : PieceUIHandlerBase
+    {
+        /// <summary>
+        /// Creates a new ASCII art UI handler that outputs to the given output
+        /// stream. Traps are hidden by default.
+        /// </summary>
+        public const this(ostream* outputStream)
+            : base(outputStream)
+            in { outputStream != null }
+        {
+            this.HideTraps = true;
+        }
+
+        /// <summary>
+        /// Creates a new ASCII art UI handler that outputs to the given output
+        /// stream. Traps can be hidden or displayed, as per the 'HideTraps'
+        /// boolean argument.
+        /// </summary>
+        public const this(ostream* outputStream, set bool HideTraps)
+            : base(outputStream)
+            in { outputStream != null };
+
+        /// <summary>
+        /// Gets a boolean value that indicates whether traps are to be displayed
+        /// or hidden.
+        /// </summary>
+        public bool HideTraps { const get; private set; }
+
+        protected override void DisplayRow()
+        {
+            *outputStream << "\n";
+        }
+
+        #region Actors
+
+        /// <summary>
+        /// Displays the given player piece.
+        /// </summary>
+        protected override void DisplayPlayer(Player Piece)
+            in { Piece != null }
+        {
+            *outputStream << "Y";
+        }
+
+        /// <summary>
+        /// Displays the given monster piece.
+        /// </summary>
+        protected override void DisplayMonster(Monster Piece)
+            in { Piece != null }
+        {
+            *outputStream << "@";
+        }
+
+        #endregion
+
+        #region Obstacles
+
+        /// <summary>
+        /// Displays the given barrel piece.
+        /// </summary>
+        protected override void DisplayBarrel(Obstacle Piece)
+            in { Piece != null }
+        {
+            *outputStream << "O";
+        }
+
+        /// <summary>
+        /// Displays the given wall piece.
+        /// </summary>
+        protected override void DisplayWall(Obstacle Piece)
+            in { Piece != null }
+        {
+            *outputStream << "#";
+        }
+
+        /// <summary>
+        /// Displays a goal piece.
+        /// </summary>
+        protected override void DisplayGoal(Goal Piece)
+            in { Piece != null }
+        {
+            *outputStream << "X";
+        }
+
+
+        /// <summary>
+        /// Displays a goal piece.
+        /// </summary>
+        protected override void DisplayGate(Gate Piece, bool IsOpened)
+            in { Piece != null }
+        {
+            if (IsOpened)
+                DisplayEmpty(Piece.Position);
+            else
+                *outputStream << "=";
+        }
+
+        /// <summary>
+        /// Displays a water piece.
+        /// </summary>
+        protected override void DisplayWater(Water Piece)
+            in { Piece != null }
+        {
+            *outputStream << "~";
+        }
+
+        /// <summary>
+        /// Displays a button piece.
+        /// </summary>
+        protected override void DisplayButton(Button Piece)
+            in { Piece != null }
+        {
+            *outputStream << ".";
+        }
+
+        /// <summary>
+        /// Displays a trap piece.
+        /// </summary>
+        protected override void DisplayTrap(Trap Piece)
+            in { Piece != null }
+        {
+            if (HideTraps)
+                DisplayEmpty(Piece.Position);
+            else
+                *outputStream << "^";
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Displays an empty cell.
+        /// </summary>
+        protected override void DisplayEmpty(Vector2<int> Position)
+        {
+            *outputStream << " ";
+        }
+
+        /// <summary>
+        /// Displays an unknown piece.
+        /// </summary>
+        protected override void DisplayDefault(PieceBase Piece)
+            in { Piece != null }
+        {
+            *outputStream << "?";
+        }
+    }
+}

@@ -1,0 +1,128 @@
+using std;
+
+namespace Arcade
+{
+    /// <summary>
+    /// Defines a base class for UI handlers that use an output stream.
+    /// </summary>
+    public abstract class UIHandlerBase : IUIHandler
+    {
+        /// <summary>
+        /// Creates a new UI handler from the given output stream.
+        /// </summary>
+        public const this(set ostream* outputStream)
+            in { outputStream != null };
+
+        invariant { OutputStream != null }
+
+        #region Abstract
+
+        public abstract void Display()
+            in { IsInitialized };
+
+        #endregion
+
+        #region Virtual
+
+        /// <summary>
+        /// Applies a command to the board.
+        /// </summary>
+        public virtual void Apply(ICommand<Board> Command)
+            in { Command != null }
+            in { IsInitialized }
+        {
+            Command.Execute(board);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// The UI handler's board.
+        /// </summary>
+        protected Board board;
+
+        /// <summary>
+        /// Gets the UI handler's board.
+        /// </summary>
+        public Board Scene { const get return board; }
+
+        /// <summary>
+        /// The UI handler's output stream.
+        /// </summary>
+        protected ostream* outputStream;
+        /// <summary>
+        /// Gets or sets the UI handler's output stream.
+        /// </summary>
+        public ostream* OutputStream
+        {
+            const get
+                return outputStream;
+            set
+                in { value != null }
+                outputStream = value;
+        }
+
+        /// <summary>
+        /// Gets a boolean flag that indicates if the UI handler has been initialized.
+        /// </summary>
+        public bool IsInitialized { const get return board != null; }
+
+        public void Initialize(Board Value)
+            in { Value != null }
+            in { !IsInitialized }
+            out { IsInitialized }
+        {
+            board = Value;
+            Display();
+        }
+
+        /// <summary>
+        /// Determines whether a player has won, i.e. whether a player
+        /// is currently standing on a goal.
+        /// </summary>
+        public bool PlayerHasWon
+        {
+            const get
+            {
+                foreach (var item in board.Pieces)
+                    if (item is Goal)
+                {
+                    var goal = (Goal)item;
+                    foreach (var player in board.GetPlayers())
+                        if (goal.IsPlayerVictorious(board, player))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets a boolean value that indicates if the board contains any player
+        /// at this time.
+        /// </summary>
+        public bool ContainsPlayers
+        {
+            const get
+            {
+                var players = board.GetPlayers();
+                return !players.empty();
+            }
+        }
+
+        /// <summary>
+        /// Examines the board and figures out whether the game has ended or not.
+        /// </summary>
+        /// <remarks>
+        /// Having this property evaluate to true does necessarily mean that the
+        /// game *will* end. It merely states that, by the rules of the game,
+        /// the game *should*, at this time, end. Types that inherit from
+        /// UIHandlerBase must define their own game-ending logic as appropriate.
+        /// </remarks>
+        public bool HasEnded
+        {
+            const get return !ContainsPlayers || PlayerHasWon;
+        }
+    }
+}

@@ -1,0 +1,79 @@
+using std;
+
+/// <summary>
+/// Represents a generic two-dimensional vector.
+/// </summary>
+public struct Vector2<T>
+{
+    /// <summary>
+    /// Creates a new two-dimensional vector at the origin.
+    /// </summary>
+    public const this() { this.X = default(T); this.Y = default(T); }
+    /// <summary>
+    /// Creates a new two-dimensional vector from the given coordinates.
+    /// </summary>
+    public const this(set T X, set T Y);
+
+    /// <summary>
+    /// Gets or sets the vector's x-coordinate.
+    /// </summary>
+    public T X;
+    /// <summary>
+    /// Gets or sets the vector's y-coordinate.
+    /// </summary>
+    public T Y;
+
+    /// <summary>
+    /// Adds two vectors together.
+    /// </summary>
+    /// <returns>
+    /// The vector (this.X + Other.X, this.Y + Other.Y).
+    /// </returns>
+    public const Vector2<T> operator+(Vector2<T> Other)
+    {
+        return new Vector2<T>(this.X + Other.X, this.Y + Other.Y);
+    }
+    /// <summary>
+    /// Subtracts the given vector from this vector.
+    /// </summary>
+    /// <returns>
+    /// The vector (this.X - Other.X, this.Y - Other.Y).
+    /// </returns>
+    public const Vector2<T> operator-(Vector2<T> Other)
+    {
+        return new Vector2<T>(this.X - Other.X, this.Y - Other.Y);
+    }
+    /// <summary>
+    /// Multiplies this vector with a scalar.
+    /// </summary>
+    /// <returns>
+    /// The vector (this.X * Other.X, this.Y * Other.Y).
+    /// </returns>
+    public const Vector2<T> operator*(T Scalar)
+    {
+        return new Vector2<T>(this.X * Scalar, this.Y * Scalar);
+    }
+
+    /// <summary>
+    /// Checks if this vector equals the given vector.
+    /// </summary>
+    public const bool operator==(Vector2<T> Other)
+    {
+        return this.X == Other.X && this.Y == Other.Y;
+    }
+    /// <summary>
+    /// Checks if this vector is not equal to the given vector.
+    /// </summary>
+    public const bool operator!=(Vector2<T> Other)
+    {
+        return this.X != Other.X || this.Y != Other.Y;
+    }
+
+    /// <summary>
+    /// Writes a textual representation of the vector to the given output stream.
+    /// </summary>
+    public static ostream operator<<(ostream Stream, Vector2<T> Value)
+    {
+        return Stream << "(" << Value.X << ", " << Value.Y << ")";
+    }
+}

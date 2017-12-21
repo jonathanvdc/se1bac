@@ -1,0 +1,25 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Describes an obstacle on the board.
+    /// </summary>
+    public virtual class Obstacle : PieceBase
+    {
+        /// <summary>
+        /// Creates a new obstacle object.
+        /// </summary>
+        protected const this();
+        /// <summary>
+        /// Creates a new obstacle object based on the given arguments.
+        /// </summary>
+        public const this(set Vector2<int> Position, set string ObstacleType, set bool Movable);
+
+        public virtual override bool IsTerrain { const get return false; }
+
+        public override bool Movable { override const get; protected set; }
+        /// <summary>
+        /// Gets this obstacle's obstacle type.
+        /// </summary>
+        public string ObstacleType { const get; protected set; }
+    }
+}

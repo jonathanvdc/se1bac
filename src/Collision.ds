@@ -1,0 +1,50 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Represents a collision of two pieces on the board.
+    /// </summary>
+    public struct Collision
+    {
+        /// <summary>
+        /// Creates a new collision instance from the given arguments.
+        /// </summary>
+        public const this(set Board Scene, set PieceBase MovingPiece, set PieceBase StaticPiece)
+            in { Scene != null }
+            in { MovingPiece != null }
+            in { StaticPiece != null }
+            in { Scene.HasPiece(MovingPiece) }
+            in { Scene.HasPiece(StaticPiece) };
+
+        invariant { Scene != null }
+        invariant { MovingPiece != null }
+        invariant { StaticPiece != null }
+
+        // <remark>
+        // We can almost guarantee these invariants, but sometimes pieces get
+        // removed from the board right before the end of a collision.
+        // </remark>
+        // invariant { Scene.HasPiece(MovingPiece) }
+        // invariant { Scene.HasPiece(StaticPiece) }
+
+        /// <summary>
+        /// Gets the board where the collision takes place.
+        /// </summary>
+        public Board Scene { const get; private set; }
+        /// <summary>
+        /// Gets the piece that moves and encounters another piece.
+        /// </summary>
+        public PieceBase MovingPiece { const get; private set; }
+        /// <summary>
+        /// Gets the piece the moving piece collides with.
+        /// </summary>
+        public PieceBase StaticPiece { const get; private set; }
+
+        /// <summary>
+        /// Calculates the offset between the static piece and the moving piece.
+        /// </summary>
+        public Vector2<int> Offset
+        {
+            const get return StaticPiece.Position - MovingPiece.Position;
+        }
+    }
+}

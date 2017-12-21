@@ -1,0 +1,267 @@
+using std;
+
+namespace Arcade
+{
+    /// <summary>
+    /// Defines a base class for UI handlers that use an output stream
+    /// and write items based on their type.
+    /// </summary>
+    public abstract class PieceUIHandlerBase : UIHandlerBase
+    {
+        /// <summary>
+        /// Creates a new UI handler from the given output stream.
+        /// </summary>
+        public const this(ostream* outputStream)
+            : base(outputStream)
+            in { outputStream != null };
+
+        public virtual void Display()
+        {
+            DisplayHeader();
+            for (int y = board.Height - 1; y >= 0; y--)
+            {
+                for (int x = 0; x < board.Width; x++)
+                {
+                    DisplayPiece(board[x, y], new Vector2<int>(x, y));
+                }
+                DisplayRow();
+            }
+            DisplayFooter();
+        }
+
+        #region Abstract
+
+        /// <summary>
+        /// Applies the default display action to the given piece.
+        /// </summary>
+        protected abstract void DisplayDefault(PieceBase Piece)
+            in { Piece != null };
+
+        #endregion
+
+        #region Header/Footer
+
+        /// <summary>
+        /// Displays a header.
+        /// </summary>
+        protected virtual void DisplayHeader()
+        {
+
+        }
+
+        /// <summary>
+        /// Displays a footer.
+        /// </summary>
+        protected virtual void DisplayFooter()
+        {
+
+        }
+
+        /// <summary>
+        /// Displays the end of a row.
+        /// </summary>
+        protected virtual void DisplayRow()
+        {
+
+        }
+
+        #endregion
+
+        #region Actors
+
+        /// <summary>
+        /// Displays an actor piece.
+        /// </summary>
+        protected virtual void DisplayActor(Actor Piece)
+            in { Piece != null }
+        {
+            if (Piece is Player)
+            {
+                DisplayPlayer((Player)Piece);
+            }
+            else if (Piece is Monster)
+            {
+                DisplayMonster((Monster)Piece);
+            }
+            else
+            {
+                DisplayDefault(Piece);
+            }
+        }
+
+        /// <summary>
+        /// Displays the given player piece.
+        /// </summary>
+        protected virtual void DisplayPlayer(Player Piece)
+            in { Piece != null }
+        {
+            DisplayDefault(Piece);
+        }
+
+        /// <summary>
+        /// Displays the given monster piece.
+        /// </summary>
+        protected virtual void DisplayMonster(Monster Piece)
+            in { Piece != null }
+        {
+            DisplayDefault(Piece);
+        }
+
+        #endregion
+
+        #region Obstacles
+
+        /// <summary>
+        /// Displays the given barrel piece.
+        /// </summary>
+        protected virtual void DisplayBarrel(Obstacle Piece)
+            in { Piece != null }
+        {
+            DisplayDefault(Piece);
+        }
+
+        /// <summary>
+        /// Displays the given wall piece.
+        /// </summary>
+        protected virtual void DisplayWall(Obstacle Piece)
+            in { Piece != null }
+        {
+            DisplayDefault(Piece);
+        }
+
+        /// <summary>
+        /// Displays the given obstacle piece.
+        /// </summary>
+        protected virtual void DisplayObstacle(Obstacle Piece)
+            in { Piece != null }
+        {
+            if (Piece.ObstacleType == "ton")
+                DisplayBarrel(Piece);
+            else if (Piece.ObstacleType == "muur")
+                DisplayWall(Piece);
+            else
+                DisplayDefault(Piece);
+        }
+
+        /// <summary>
+        /// Displays a goal piece.
+        /// </summary>
+        protected virtual void DisplayGoal(Goal Piece)
+            in { Piece != null }
+        {
+            DisplayDefault(Piece);
+        }
+
+
+        /// <summary>
+        /// Displays a goal piece.
+        /// </summary>
+        protected virtual void DisplayGate(Gate Piece, bool IsOpened)
+            in { Piece != null }
+        {
+            DisplayDefault(Piece);
+        }
+
+        /// <summary>
+        /// Displays a water piece.
+        /// </summary>
+        protected virtual void DisplayWater(Water Piece)
+            in { Piece != null }
+        {
+            DisplayDefault(Piece);
+        }
+
+        /// <summary>
+        /// Displays a button piece.
+        /// </summary>
+        protected virtual void DisplayButton(Button Piece)
+            in { Piece != null }
+        {
+            DisplayDefault(Piece);
+        }
+
+        /// <summary>
+        /// Displays a trap piece.
+        /// </summary>
+        protected virtual void DisplayTrap(Trap Piece)
+            in { Piece != null }
+        {
+            DisplayDefault(Piece);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Displays an empty cell.
+        /// </summary>
+        protected virtual void DisplayEmpty(Vector2<int> Position)
+        {
+
+        }
+
+        protected virtual void DisplayPiece(PieceBase Piece, Vector2<int> Position)
+        {
+            if (Piece == null)
+            {
+                DisplayEmpty(Position);
+            }
+            else if (Piece is Actor)
+            {
+                DisplayActor((Actor)Piece);
+            }
+            else if (Piece is Goal)
+            {
+                DisplayGoal((Goal)Piece);
+            }
+            else if (Piece is Gate)
+            {
+                var item = (Gate)Piece;
+                DisplayGate(item, item.IsOpened(board));
+            }
+            else if (Piece is Water)
+            {
+                DisplayWater((Water)Piece);
+            }
+            else if (Piece is Button)
+            {
+                DisplayButton((Button)Piece);
+            }
+            else if (Piece is Trap)
+            {
+                DisplayTrap((Trap)Piece);
+            }
+            else if (Piece is Obstacle)
+            {
+                DisplayObstacle((Obstacle)Piece);
+            }
+            else
+            {
+                DisplayDefault(Piece);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Defines a base class for unordered UI handlers that use an output stream
+    /// and write items based on their type, without any particular order.
+    /// </summary>
+    public abstract class UnorderedPieceUIHandlerBase : PieceUIHandlerBase
+    {
+        /// <summary>
+        /// Creates a new UI handler from the given output stream.
+        /// </summary>
+        public const this(ostream* outputStream)
+            : base(outputStream)
+            in { outputStream != null };
+
+        public virtual void Display()
+        {
+            DisplayHeader();
+            foreach (var item in board.Pieces)
+            {
+                DisplayPiece(item, item.Position);
+            }
+            DisplayFooter();
+        }
+    }
+}

@@ -1,0 +1,230 @@
+using std;
+
+namespace Arcade
+{
+    /// <summary>
+    /// Describes a Computer Graphics UI handler: a UI handler that outputs
+    /// an .ini file that our own 3D graphics engine can turn into a bitmap.
+    /// </summary>
+    public class CGUIHandler : PieceUIHandlerBase
+    {
+        /// <summary>
+        /// Creates a new CG UI handler that outputs to the given output
+        /// stream.
+        /// </summary>
+        public const this(ostream* outputStream)
+            : base(outputStream)
+            in { outputStream != null }
+        {
+            NrFigures = 0;
+        }
+
+        /// <summary>
+        /// Counts the number of 3D figures drawn.
+        /// </summary>
+        private int NrFigures;
+
+        /// <summary>
+        /// Applies a command to the board.
+        /// </summary>
+        public void Apply(ICommand<Board> Command)
+            in { Command != null }
+            in { IsInitialized }
+        {
+            Command.Execute(board);
+        }
+
+        protected override void DisplayRow()
+        {
+        }
+
+        protected override void DisplayHeader()
+        {
+            NrFigures = 0;
+        }
+
+        protected override void DisplayFooter()
+        {
+            *outputStream << "[General]\n";
+            *outputStream << "size = 1024\n";
+            *outputStream << "shadowMask = 1024\n";
+            *outputStream << "shadowEnabled = TRUE\n";
+            *outputStream << "backgroundcolor = (0, 0, 0)\n";
+            *outputStream << "type = \"LightedZBuffering\"\n";
+            *outputStream << "nrLights = 1\n";
+            *outputStream << "eye = (30, 10, 100)\n";
+            *outputStream << "nrFigures = " << NrFigures << "\n";
+            *outputStream << "[Light0]\n";
+            *outputStream << "infinity = FALSE\n";
+            *outputStream << "location = (8, 8, 30)\n";
+            *outputStream << "ambientLight = (1, 1, 1)\n";
+            *outputStream << "diffuseLight = (1, 1, 1)\n";
+            *outputStream << "specularLight = (1, 1, 1)\n";
+        }
+
+        private void WriteFigure(Vector2<int> Position, double Height,
+            string Type, double Red, double Green, double Blue, double Scale)
+        {
+            *outputStream << "[Figure" << NrFigures << "]\n";
+            NrFigures++;
+            *outputStream << "type = \"" << Type << "\"\n";
+            if (Type == "Cylinder" || Type == "Cone")
+            {
+                *outputStream << "n = 30\n";
+                *outputStream << "height = 2\n";
+            }
+            else if (Type == "Sphere")
+            {
+                *outputStream << "n = 2\n";
+            }
+            *outputStream << "scale = " << Scale * 0.5 << "\n";
+            *outputStream << "rotateX = 0\n";
+            *outputStream << "rotateY = 0\n";
+            *outputStream << "rotateZ = 0\n";
+            *outputStream << "center = (" << -Position.Y << ", " << Position.X << ", " << Height << ")\n";
+            *outputStream << "ambientReflection = (" << Red   * 0.3 << ", "
+                                                     << Green * 0.3 << ", "
+                                                     << Blue  * 0.3 << ")\n";
+            *outputStream << "diffuseReflection = (" << Red   * 0.7 << ", "
+                                                     << Green * 0.7 << ", "
+                                                     << Blue  * 0.7 << ")\n";
+            *outputStream << "specularReflection = (0.4, 0.4, 0.4)\n";
+            *outputStream << "reflectionCoefficient = 20\n";
+        }
+
+        private void WriteFigure(PieceBase Piece, double Height,
+            string Type, double Red, double Green, double Blue, double Scale)
+        {
+            WriteFigure(Piece.Position, Height, Type, Red, Green, Blue, Scale);
+        }
+
+        private void WriteFloor(Vector2<int> Position)
+        {
+            WriteFigure(Position, -1, "Cube", 0.2, 0.2, 0.2, 1.0);
+        }
+
+        private void WriteFloor(PieceBase Piece)
+        {
+            WriteFloor(Piece.Position);
+        }
+
+        #region Actors
+
+        /// <summary>
+        /// Displays the given player piece.
+        /// </summary>
+        protected virtual void DisplayPlayer(Player Piece)
+            in { Piece != null }
+        {
+            WriteFigure(Piece, 0, "Icosahedron", 0.0, 1.0, 0.2, 0.96);
+            WriteFloor(Piece);
+        }
+
+        /// <summary>
+        /// Displays the given monster piece.
+        /// </summary>
+        protected virtual void DisplayMonster(Monster Piece)
+            in { Piece != null }
+        {
+            WriteFigure(Piece, 0, "Icosahedron", 0.8, 0.4, 0.2, 0.96);
+            WriteFloor(Piece);
+        }
+
+        #endregion
+
+        #region Obstacles
+
+        /// <summary>
+        /// Displays the given barrel piece.
+        /// </summary>
+        protected virtual void DisplayBarrel(Obstacle Piece)
+            in { Piece != null }
+        {
+            WriteFigure(Piece, -0.5, "Cylinder", 0.7, 0.4, 0.1, 0.96);
+            WriteFloor(Piece);
+        }
+
+        /// <summary>
+        /// Displays the given wall piece.
+        /// </summary>
+        protected virtual void DisplayWall(Obstacle Piece)
+            in { Piece != null }
+        {
+            WriteFigure(Piece, 0, "Cube", 0.0, 0.4, 1.0, 0.96);
+            WriteFloor(Piece);
+        }
+
+        /// <summary>
+        /// Displays a goal piece.
+        /// </summary>
+        protected virtual void DisplayGoal(Goal Piece)
+            in { Piece != null }
+        {
+            WriteFigure(Piece, 0, "Octahedron", 0.4, 1.0, 0.2, 0.96);
+            WriteFloor(Piece);
+        }
+
+
+        /// <summary>
+        /// Displays a goal piece.
+        /// </summary>
+        protected virtual void DisplayGate(Gate Piece, bool IsOpened)
+            in { Piece != null }
+        {
+            if (!IsOpened) {
+                WriteFigure(Piece, -0.15, "Cube", 0.0, 0.6, 0.6, 0.96);
+                WriteFloor(Piece);
+            } else {
+                WriteFigure(Piece, -1, "Cube", 0.0, 0.6, 0.6, 0.96);
+            }
+        }
+
+        /// <summary>
+        /// Displays a water piece.
+        /// </summary>
+        protected virtual void DisplayWater(Water Piece)
+            in { Piece != null }
+        {
+            WriteFigure(Piece, -1.25, "Cube", 0.1, 0.1, 0.7, 1.00);
+        }
+
+        /// <summary>
+        /// Displays a button piece.
+        /// </summary>
+        protected virtual void DisplayButton(Button Piece)
+            in { Piece != null }
+        {
+            WriteFigure(Piece, -0.5, "Cylinder", 0.7, 0.7, 0.1, 0.20);
+            WriteFloor(Piece);
+        }
+
+        /// <summary>
+        /// Displays a trap piece.
+        /// </summary>
+        protected virtual void DisplayTrap(Trap Piece)
+            in { Piece != null }
+        {
+            WriteFloor(Piece);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Displays an empty cell.
+        /// </summary>
+        protected virtual void DisplayEmpty(Vector2<int> Position)
+        {
+            WriteFloor(Position);
+        }
+
+        /// <summary>
+        /// Displays an unknown piece.
+        /// </summary>
+        protected virtual override void DisplayDefault(PieceBase Piece)
+            in { Piece != null }
+        {
+            WriteFigure(Piece, 0, "Cube", 1.0, 1.0, 1.0, 0.96);
+            WriteFloor(Piece);
+        }
+    }
+}

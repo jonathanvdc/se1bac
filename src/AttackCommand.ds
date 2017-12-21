@@ -1,0 +1,42 @@
+namespace Arcade
+{
+    /// <summary>
+    /// Represents a command that moves an actor by a given offset.
+    /// </summary>
+    public class AttackCommand : ICommand<Board>
+    {
+        /// <summary>
+        /// Creates a new move command instance.
+        /// </summary>
+        public const this(set Actor Target, set Vector2<int> Offset)
+            in { Target != null }
+            in { Offset != default(Vector2<int>) };
+
+        invariant { Target != null }
+        invariant { Offset != default(Vector2<int>) } // That would be lame.
+
+        /// <summary>
+        /// Gets the actor to move.
+        /// </summary>
+        public Actor Target { const get; private set; }
+
+        /// <summary>
+        /// Gets the move command's move offset.
+        /// </summary>
+        public Vector2<int> Offset { const get; private set; }
+
+        public bool Execute(Board TargetBoard)
+        {
+            var goalPos = Target.Position + Offset;
+            if (!TargetBoard.InRange(goalPos))
+                return false;
+            var obstacle = TargetBoard[goalPos];
+            if (obstacle != null)
+            {
+                var collision = new Collision(TargetBoard, Target, obstacle);
+                return obstacle.Attack(collision);
+            }
+            else return false;
+        }
+    }
+}
